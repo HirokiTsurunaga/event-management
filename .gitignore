@@ -1,0 +1,55 @@
+# Laravel
+/backend/node_modules
+/backend/public/build
+/backend/public/hot
+/backend/public/storage
+/backend/storage/*.key
+/backend/vendor
+/backend/.env
+/backend/.env.backup
+/backend/.env.production
+/backend/.phpunit.result.cache
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/auth.json
+/backend/npm-debug.log
+/backend/yarn-error.log
+/backend/storage/logs/*
+/backend/bootstrap/cache/*
+
+# React
+/frontend/node_modules
+/frontend/dist
+/frontend/dist-ssr
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+/frontend/npm-debug.log
+/frontend/yarn-error.log
+/frontend/pnpm-debug.log
+/frontend/coverage
+/frontend/.pnp
+/frontend/.pnp.js
+/frontend/.DS_Store
+
+# Docker
+/postgres_data
+.env
+
+# Temp directories
+/temp_*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE & Editors
+/.idea
+/.vscode
+*.sublime-project
+*.sublime-workspace
+/.fleet
+/.phpstorm.meta.php
+/_ide_helper.php 
