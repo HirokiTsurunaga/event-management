@@ -49,6 +49,14 @@ class Event extends Model
     }
 
     /**
+     * イベントの作成者（管理者）- creatorという名前でのエイリアス
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * イベントの参加登録一覧
      */
     public function registrations(): HasMany
