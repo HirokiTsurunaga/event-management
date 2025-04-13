@@ -33,10 +33,69 @@ export interface EventFormData {
   image?: File;
 }
 
+export interface EventSearchParams {
+  search?: string;
+  categories?: string;
+  date_from?: string;
+  date_to?: string;
+  available_only?: boolean;
+  sort_by?: 'name' | 'start_date' | 'location' | 'created_at';
+  sort_dir?: 'asc' | 'desc';
+  page?: number;
+  per_page?: number;
+}
+
 const EventService = {
   // イベント一覧取得
-  getEvents: async (page = 1) => {
-    const response = await api.get(`/events?page=${page}`);
+  getEvents: async (params: EventSearchParams = {}) => {
+    const queryParams = new URLSearchParams();
+    
+    // ページネーションパラメータ
+    if (params.page) {
+      queryParams.append('page', params.page.toString());
+    }
+    
+    if (params.per_page) {
+      queryParams.append('per_page', params.per_page.toString());
+    }
+    
+    // 検索パラメータ
+    if (params.search) {
+      queryParams.append('search', params.search);
+    }
+    
+    // カテゴリーフィルター
+    if (params.categories) {
+      queryParams.append('categories', params.categories);
+    }
+    
+    // 日付範囲フィルター
+    if (params.date_from) {
+      queryParams.append('date_from', params.date_from);
+    }
+    
+    if (params.date_to) {
+      queryParams.append('date_to', params.date_to);
+    }
+    
+    // 参加可能なイベントのみ表示
+    if (params.available_only) {
+      queryParams.append('available_only', params.available_only.toString());
+    }
+    
+    // ソート順
+    if (params.sort_by) {
+      queryParams.append('sort_by', params.sort_by);
+    }
+    
+    if (params.sort_dir) {
+      queryParams.append('sort_dir', params.sort_dir);
+    }
+    
+    const queryString = queryParams.toString();
+    const endpoint = queryString ? `/events?${queryString}` : '/events';
+    
+    const response = await api.get(endpoint);
     return response.data;
   },
   

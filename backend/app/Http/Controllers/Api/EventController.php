@@ -21,17 +21,77 @@ class EventController extends Controller
         // 認証されたユーザーの取得
         $user = $request->user();
         
-        // 認証されているユーザーが管理者の場合
-        if ($user && $user->isAdmin()) {
-            // 管理者の場合、全てのイベントを取得
-            $events = Event::orderBy('start_date', 'asc')
-                           ->paginate(10);
-        } else {
-            // 非認証または参加者の場合、公開されているイベントのみ取得
-            $events = Event::where('is_published', true)
-                           ->orderBy('start_date', 'asc')
-                           ->paginate(10);
+        // クエリビルダーの初期化
+        $query = Event::query();
+        
+        // 権限に基づいたクエリの制限
+        if (!$user || !$user->isAdmin()) {
+            $query->where('is_published', true);
         }
+        
+        // 検索パラメータの処理
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhere('location', 'like', "%{$searchTerm}%");
+            });
+        }
+        
+        // カテゴリーフィルター
+        if ($request->has('categories')) {
+            $categories = explode(',', $request->input('categories'));
+            // イベントとカテゴリーの中間テーブルがある場合の実装例
+            // $query->whereHas('categories', function($q) use ($categories) {
+            //     $q->whereIn('category_id', $categories);
+            // });
+        }
+        
+        // 日付範囲フィルター
+        if ($request->has('date_from')) {
+            $query->where('start_date', '>=', $request->input('date_from'));
+        }
+        
+        if ($request->has('date_to')) {
+            $query->where('start_date', '<=', $request->input('date_to'));
+        }
+        
+        // 参加可能なイベントのみ表示（満員でないもの）
+        if ($request->boolean('available_only')) {
+            $query->where(function($q) {
+                $q->whereNull('capacity')
+                  ->orWhereRaw('capacity > (SELECT COUNT(*) FROM registrations WHERE registrations.event_id = events.id)');
+            });
+        }
+        
+        // ソート順の処理
+        $sortField = $request->input('sort_by', 'start_date');
+        $sortDirection = $request->input('sort_dir', 'asc');
+        
+        // 許可されたソートフィールドのリスト
+        $allowedSortFields = ['name', 'start_date', 'location', 'created_at'];
+        
+        // 入力値の検証
+        if (!in_array($sortField, $allowedSortFields)) {
+            $sortField = 'start_date';
+        }
+        
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+        
+        $query->orderBy($sortField, $sortDirection);
+        
+        // ページネーション
+        $perPage = $request->input('per_page', 10);
+        $events = $query->paginate($perPage);
+        
+        // 各イベントの参加者数を取得
+        $events->getCollection()->transform(function ($event) {
+            $event->participant_count = $event->registrations()->count();
+            return $event;
+        });
         
         return response()->json([
             'events' => $events,
