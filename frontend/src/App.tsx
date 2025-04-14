@@ -11,6 +11,8 @@ import EventRegisterPage from './pages/events/EventRegisterPage';
 import MyRegistrationsPage from './pages/user/MyRegistrationsPage';
 import QrCodePage from './pages/user/QrCodePage';
 import CheckInManagementPage from './pages/admin/CheckInManagementPage';
+import EventManagementPage from './pages/admin/EventManagementPage';
+import EventFormPage from './pages/admin/EventFormPage';
 import ApiTestTool from './components/ApiTestTool';
 import AuthService from './services/auth';
 
@@ -140,6 +142,39 @@ const App: React.FC = () => {
           />
           
           {/* 管理者専用ページ */}
+          <Route 
+            path="/admin/events" 
+            element={
+              <AdminRoute>
+                <Layout>
+                  <EventManagementPage />
+                </Layout>
+              </AdminRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/events/create" 
+            element={
+              <AdminRoute>
+                <Layout>
+                  <EventFormPage />
+                </Layout>
+              </AdminRoute>
+            } 
+          />
+          
+          <Route 
+            path="/admin/events/:id/edit" 
+            element={
+              <AdminRoute>
+                <Layout>
+                  <EventFormPage />
+                </Layout>
+              </AdminRoute>
+            } 
+          />
+          
           <Route 
             path="/admin/check-ins" 
             element={

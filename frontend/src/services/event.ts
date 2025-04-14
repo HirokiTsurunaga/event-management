@@ -113,6 +113,9 @@ const EventService = {
       if (value !== undefined) {
         if (key === 'image' && value instanceof File) {
           formData.append(key, value);
+        } else if (key === 'is_published') {
+          // is_publishedはブール値のまま送信
+          formData.append(key, value ? '1' : '0');
         } else {
           formData.append(key, String(value));
         }
@@ -134,6 +137,9 @@ const EventService = {
       if (value !== undefined) {
         if (key === 'image' && value instanceof File) {
           formData.append(key, value);
+        } else if (key === 'is_published') {
+          // is_publishedはブール値のまま送信
+          formData.append(key, value ? '1' : '0');
         } else {
           formData.append(key, String(value));
         }

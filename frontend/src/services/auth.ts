@@ -82,6 +82,11 @@ const AuthService = {
     }
   },
   
+  // トークン取得
+  getToken: (): string | null => {
+    return localStorage.getItem('token');
+  },
+  
   // 現在のユーザー情報取得
   getCurrentUser: async () => {
     const response = await api.get('/user');
